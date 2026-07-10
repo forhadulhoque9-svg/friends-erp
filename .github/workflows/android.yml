@@ -13,11 +13,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Install Dependencies
+      - name: Clean and Install Dependencies
         run: |
-          npm install
+          rm -rf package-lock.json node_modules
+          npm install --legacy-peer-deps
           npm run build
 
       - name: Setup Java JDK
