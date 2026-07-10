@@ -1,0 +1,42 @@
+name: Build Android APK
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm run build
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Capacitor & Build APK
+        run: |
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Friends Enterprise" "com.friendsenterprise.erp" --web-dir=dist
+          npx cap add android
+          npx cap sync
+          cd android && ./gradlew assembleDebug
+
+      - name: Upload Finished APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
