@@ -15,9 +15,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Clean and Install Dependencies
+      - name: Clean and Fix HTML Path
         run: |
           rm -rf package-lock.json node_modules
+          # Fix Vite HTML build path issue if necessary
+          if [ -f index.html ]; then
+            sed -i 's/\/src\/main.tsx/src\/main.tsx/g' index.html
+          fi
+
+      - name: Install Dependencies
+        run: |
           npm install --legacy-peer-deps
           npm run build
 
